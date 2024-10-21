@@ -38,7 +38,7 @@ resource "virtualbox_vm" "node" {
  
   network_adapter {
 
-    type           = "hostonly"
+    type           = "nat"
 
     host_interface = "vboxnet1"
 
