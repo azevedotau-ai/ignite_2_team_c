@@ -32,7 +32,7 @@ resource "virtualbox_vm" "node" {
   user_data = file("${path.module}/user_data")
 
   network_adapter {
-    type           = "nat"
+    type           = "bridged"
     host_interface = "vboxnet1"
   }
 
