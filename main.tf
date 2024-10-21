@@ -1,28 +1,60 @@
 terraform {
+
   required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=3.0.0"
+
+    virtualbox = {
+
+      source = "terra-farm/virtualbox"
+
+      version = "0.2.2-alpha.1"
+
     }
+
   }
-}
 
-# Configure the Microsoft Azure Provider
-provider "azurerm" {
-  resource_provider_registrations = "none" # This is only required when the User, Service Principal, or Identity running Terraform lacks the permissions to register Azure Resource Providers.
-  features {}
 }
+ 
+provider "virtualbox" {
 
-# Create a resource group
-resource "azurerm_resource_group" "example" {
-  name     = "example-resources"
-  location = "West Europe"
-}
+  # Configuration options
 
-# Create a virtual network within the resource group
-resource "azurerm_virtual_network" "example" {
-  name                = "example-network"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  address_space       = ["10.0.0.0/16"]
 }
+ 
+# There are currently no configuration options for the provider itself.
+ 
+resource "virtualbox_vm" "node" {
+
+  count     = 2
+
+  name      = format("node-%02d", count.index + 1)
+
+  image     = "https://app.vagrantup.com/ubuntu/boxes/bionic64/versions/20180903.0.0/providers/virtualbox.box"
+
+  cpus      = 2
+
+  memory    = "512 mib"
+
+  user_data = file("${path.module}/user_data")
+ 
+  network_adapter {
+
+    type           = "hostonly"
+
+    host_interface = "vboxnet1"
+
+  }
+
+}
+ 
+output "IPAddr" {
+
+  value = element(virtualbox_vm.node.*.network_adapter.0.ipv4_address, 1)
+
+}
+ 
+output "IPAddr_2" {
+
+  value = element(virtualbox_vm.node.*.network_adapter.0.ipv4_address, 2)
+
+}
+ 
