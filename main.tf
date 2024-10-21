@@ -36,10 +36,6 @@ resource "virtualbox_vm" "node" {
     host_interface = "vboxnet1"
   }
 
-  timeouts {
-    create = "20m"  # Adjust as needed
-  }
-
 }
  
 output "IPAddr" {
